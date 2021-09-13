@@ -85,22 +85,22 @@ public class UnistreamTranscoderProcessor extends ProcessorChainElement {
         //SKIP_SECONDS and LENGTH
         long programStartSecondsInFirstFile;
         if (request.isHasExactFile()){
-            //There is one exact file, so do not skip
-            line = line.replace("$$SKIP_SECONDS$$", 0l + "");
-    
-            programStartSecondsInFirstFile = 0;
-            //HACK: Remove the start offset, as it seems to trigger a ~1 sec skip even when 0
-            line = line.replace("-ss $$START_OFFSET$$"," ");
+            log.debug("Exact-file transcoding so removing all clipping information" +
+                    " from transcoding command for {}.", request);
+            line = line
+                    .replaceAll("-ss ", " ")
+                    .replace("-t ", " ")
+                    .replace("$$SKIP_SECONDS$$", " ")
+                    .replace("$$START_OFFSET$$"," ")
+                    .replace("$$LENGTH$$", " ");
 
-            
+            programStartSecondsInFirstFile = 0;
             //When hasExactFile, there should really only be one clip
             if (request.getClips().size() > 1){
                 log.error("Request {}, clips > 1 ({}) but hasExactFile is set",request,request.getClips());
             }
     
-            //HACK: We should not really replace the parameter itself, just the value, but nessesary here
-            //Length should not really be set, as we should use the entire file.
-            line = line.replace("-t $$LENGTH$$", " ");
+
         } else {
             //This is a cut from source files, so skip so that
             //We start 5 secs before, and then skip the first 5 secs of the transcoding. This ensures misaligned frames
