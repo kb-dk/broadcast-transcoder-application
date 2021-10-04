@@ -1,3 +1,7 @@
+0.8 
+=====
+* Modified transcoding of programs with exact files to remove all "-ss" and "-length" elements from the ffmpeg command line.
+
 0.7.1
 =====
 * FinalMediaFileRenamerProcessor can now overwrite files when overwrite=true in `bta.behaivour.properties`
